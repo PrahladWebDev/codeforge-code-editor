@@ -1,0 +1,28 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  frontend-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm install
+        npm run build
+
+    - name: Upload dist to server
+      uses: appleboy/scp-action@v1
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        source: "frontend/dist/*"
+        target: "/var/www/codeforge/frontend/dist"
+        overwrite: true
