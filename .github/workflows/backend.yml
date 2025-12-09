@@ -2,32 +2,56 @@ name: Deploy Backend
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+    paths:
+      - "backend/**"
 
 jobs:
   backend-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-    - name: Upload backend files
-      uses: appleboy/scp-action@v1
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        source: "backend/*,!backend/.env"
-        target: "/var/www/codeforge/backend"
-        overwrite: true
+      # 🔥 1. Clean backend folder to remove old nested folders
+      - name: Clean backend folder on server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            rm -rf /var/www/codeforge/backend/*
+            mkdir -p /var/www/codeforge/backend
 
-    - name: Restart backend
-      uses: appleboy/ssh-action@v1
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          cd /var/www/codeforge/backend
-          npm install --production
-          pm2 restart codeforge-backend
+      # 🔥 2. Upload new backend files
+      - name: Upload backend files (without .env)
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "backend/**"
+          target: "/var/www/codeforge/backend"
+          strip_components: 1
+          overwrite: true
+          exclude: |
+            backend/.env
+            backend/node_modules/**
+
+      # 🔥 3. Install dependencies & restart backend with PM2
+      - name: Install dependencies & Restart Backend with PM2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /var/www/codeforge/backend
+            npm install --production
+            pm2 stop codeforge-backend || true
+            pm2 delete codeforge-backend || true
+            pm2 start server.js --name codeforge-backend --update-env
+            pm2 save
+            
