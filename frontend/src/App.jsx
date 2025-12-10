@@ -5,7 +5,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import ProjectList from "./components/ProjectList";
 import Editor from "./components/Editor";
-import LandingPage from "./componenets/LandingPage";
+import LandingPage from "./components/LandingPage";
 
 import axiosInstance from "./utils/axios";
 
