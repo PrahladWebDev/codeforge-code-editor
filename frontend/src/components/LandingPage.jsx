@@ -41,7 +41,7 @@ function LandingPage() {
           <a href="#how" className="block text-gray-700 hover:text-gray-900">How It Works</a>
 
           <Link
-            to="/login"
+            to="/auth"
             className="block w-full text-center px-5 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition font-semibold"
           >
             Get Started
@@ -62,7 +62,7 @@ function LandingPage() {
         </p>
 
         <Link
-          to="/login"
+          to="/auth"
           className="px-8 py-4 bg-gray-900 hover:bg-gray-700 text-white rounded-lg text-lg font-semibold transition shadow-md"
         >
           Start Coding – It’s Free
