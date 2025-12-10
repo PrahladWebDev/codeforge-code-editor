@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import AceEditor from 'react-ace';
 import axiosInstance from "../utils/axios";
 
+import { Save, Play } from "lucide-react";
+
 // Themes + core modes
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/ext-language_tools';
@@ -60,7 +62,6 @@ function Editor({ project, onRefresh }) {
     setOutput('');
     setError('');
 
-    // load dynamic Ace mode
     const normalized =
       project.language === 'go' ? 'golang' : project.language;
     loadMode(normalized);
@@ -95,10 +96,7 @@ function Editor({ project, onRefresh }) {
     try {
       await axiosInstance.put(`/projects/${project._id}`, { code });
 
-      // reflect saved immediately (avoid flicker)
       setIsSaved(true);
-
-      // refresh project list in parent
       onRefresh();
     } catch (err) {
       console.error('Save failed:', err);
@@ -118,7 +116,6 @@ function Editor({ project, onRefresh }) {
     setError('');
 
     try {
-      // Run Javascript locally
       if (project.language === 'javascript') {
         const logs = [];
         const originalLog = console.log;
@@ -136,18 +133,15 @@ function Editor({ project, onRefresh }) {
         }
       }
 
-      // HTML Live Preview
       else if (project.language === 'html') {
         if (iframeRef.current) iframeRef.current.srcdoc = code;
         setOutput('Preview updated');
       }
 
-      // CSS cannot run standalone
       else if (project.language === 'css') {
         setOutput('CSS cannot run alone. Embed inside HTML.');
       }
 
-      // For Python, Java, C++, Go, Ruby → Backend execution
       else {
         const res = await axiosInstance.post('/execute', {
           code,
@@ -201,7 +195,7 @@ function Editor({ project, onRefresh }) {
           </span>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4">
           <span
             className={`text-sm font-medium ${
               isSaved ? 'text-green-400' : 'text-yellow-400'
@@ -210,26 +204,34 @@ function Editor({ project, onRefresh }) {
             {saving ? 'Saving...' : isSaved ? 'Saved' : 'Unsaved changes'}
           </span>
 
+          {/* SAVE ICON BUTTON */}
           <button
             onClick={handleSave}
             disabled={saving || isSaved}
-            className={`px-5 py-2 rounded-lg font-medium transition ${
+            className={`p-2 rounded-lg transition ${
               saving || isSaved
                 ? 'bg-gray-700 opacity-50 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700'
             }`}
           >
-            {saving ? 'Saving...' : 'Save'}
+            <Save
+              size={22}
+              className={`${saving ? 'animate-pulse' : ''}`}
+            />
           </button>
 
+          {/* RUN ICON BUTTON */}
           <button
             onClick={handleRun}
             disabled={running}
-            className={`px-6 py-2 rounded-lg font-bold text-white transition ${
+            className={`p-2 rounded-lg transition ${
               running ? 'bg-gray-600' : 'bg-green-600 hover:bg-green-700'
             }`}
           >
-            {running ? 'Running...' : 'Run Code'}
+            <Play
+              size={22}
+              className={`${running ? 'animate-spin-slow' : ''}`}
+            />
           </button>
         </div>
       </div>
@@ -282,7 +284,7 @@ function Editor({ project, onRefresh }) {
               <pre className="whitespace-pre-wrap">{output}</pre>
             ) : (
               <span className="text-gray-400">
-                Click "Run Code" to see output
+                Click Run to see output
               </span>
             )}
           </div>
