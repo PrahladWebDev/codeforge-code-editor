@@ -17,7 +17,7 @@ import {
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
 
-// Most common modes
+// Modes
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-html";
@@ -29,7 +29,6 @@ import "ace-builds/src-noconflict/mode-php";
 import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/mode-sh";
 
-// Dynamic mode loader
 const loadMode = async (lang) => {
   try {
     switch (lang) {
@@ -59,6 +58,7 @@ function Editor({ project, onRefresh }) {
   const [code, setCode] = useState(project.code || "");
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
+
   const [running, setRunning] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
@@ -68,47 +68,26 @@ function Editor({ project, onRefresh }) {
 
   const iframeRef = useRef(null);
 
-  // ----------------------------
-  // FIX: Prevent code overwrite
-  // ----------------------------
+  // -----------------------------
+  // FIX • DO NOT OVERWRITE CODE
+  // -----------------------------
   useEffect(() => {
-    setCode((prev) => (prev === project.code ? project.code : prev));
-
-    loadMode(project.language === "go" ? "golang" : project.language);
-
-    setError("");
+    setCode(project.code ?? "");
+    loadMode(project.language);
     setOutput("");
+    setError("");
+    setIsSaved(true);
   }, [project._id]);
 
-  // ----------------------------
-  // Auto-save (3 sec debounce)
-  // ----------------------------
-  useEffect(() => {
-    if (code === project.code) {
-      setIsSaved(true);
-      return;
-    }
-
-    setIsSaved(false);
-
-    const timer = setTimeout(() => {
-      handleSave();
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [code]);
-
-  // ----------------------------
-  // Manual Save
-  // ----------------------------
+  // -----------------------------
+  // MANUAL SAVE ONLY
+  // -----------------------------
   const handleSave = async () => {
-    if (saving || code === project.code) return;
+    if (saving) return;
 
     setSaving(true);
-
     try {
       await axiosInstance.put(`/projects/${project._id}`, { code });
-
       setIsSaved(true);
       onRefresh();
     } catch (err) {
@@ -118,9 +97,9 @@ function Editor({ project, onRefresh }) {
     }
   };
 
-  // ----------------------------
+  // -----------------------------
   // Run Code
-  // ----------------------------
+  // -----------------------------
   const handleRun = async () => {
     setRunning(true);
     setError("");
@@ -141,14 +120,10 @@ function Editor({ project, onRefresh }) {
         }
 
         console.log = originalLog;
-      }
-
-      else if (project.language === "html") {
+      } else if (project.language === "html") {
         iframeRef.current.srcdoc = code;
         setOutput("Preview updated");
-      }
-
-      else {
+      } else {
         const res = await axiosInstance.post("/execute", {
           code,
           language: project.language,
@@ -164,9 +139,9 @@ function Editor({ project, onRefresh }) {
     }
   };
 
-  // ----------------------------
-  // Extra Tools
-  // ----------------------------
+  // -----------------------------
+  // Tools
+  // -----------------------------
   const handleFormat = () => {
     try {
       if (project.language === "javascript") {
@@ -196,9 +171,6 @@ function Editor({ project, onRefresh }) {
     link.click();
   };
 
-  // ----------------------------
-  // Ace Mode Mapping
-  // ----------------------------
   const aceMode =
     project.language === "cpp"
       ? "c_cpp"
@@ -211,21 +183,19 @@ function Editor({ project, onRefresh }) {
 
       {/* Header */}
       <div className="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
-
         <div>
           <h2 className="text-xl font-bold">{project.name}</h2>
           <p className="text-sm text-gray-400">{project.language.toUpperCase()}</p>
         </div>
 
         <div className="flex items-center space-x-3">
-
           <span className={`${isSaved ? "text-green-400" : "text-yellow-400"} text-sm`}>
             {saving ? "Saving..." : isSaved ? "Saved" : "Unsaved Changes"}
           </span>
 
           <button
             onClick={handleSave}
-            disabled={saving || isSaved}
+            disabled={saving}
             className="p-2 bg-blue-600 hover:bg-blue-700 rounded-lg"
           >
             <Save size={20} />
@@ -243,7 +213,6 @@ function Editor({ project, onRefresh }) {
 
       {/* Tools Bar */}
       <div className="bg-gray-800 text-white px-4 py-2 flex flex-wrap gap-4 items-center">
-
         <button onClick={handleFormat} className="flex items-center gap-2">
           <RotateCw size={18} /> Format
         </button>
@@ -276,7 +245,10 @@ function Editor({ project, onRefresh }) {
             mode={aceMode}
             theme="monokai"
             value={code}
-            onChange={setCode}
+            onChange={(val) => {
+              setCode(val);
+              setIsSaved(false);
+            }}
             width="100%"
             height="100%"
             fontSize={fontSize}
