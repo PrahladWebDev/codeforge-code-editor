@@ -10,15 +10,12 @@ function LandingPage() {
 
       {/* NAVBAR */}
       <header className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-gray-200 bg-white shadow-sm">
-        <h1 className="text-3xl font-extrabold text-gray-800">
-          CodeForge
-        </h1>
+        <h1 className="text-3xl font-extrabold text-gray-800">CodeForge</h1>
 
         {/* Desktop Menu */}
         <nav className="hidden md:flex items-center space-x-8 text-gray-600 font-medium">
           <a href="#features" className="hover:text-gray-900 transition">Features</a>
           <a href="#how" className="hover:text-gray-900 transition">How It Works</a>
-          <a href="#pricing" className="hover:text-gray-900 transition">Pricing</a>
 
           <Link
             to="/login"
@@ -42,7 +39,6 @@ function LandingPage() {
         <div className="md:hidden bg-white border-b border-gray-200 px-6 py-4 space-y-4">
           <a href="#features" className="block text-gray-700 hover:text-gray-900">Features</a>
           <a href="#how" className="block text-gray-700 hover:text-gray-900">How It Works</a>
-          <a href="#pricing" className="block text-gray-700 hover:text-gray-900">Pricing</a>
 
           <Link
             to="/login"
@@ -71,21 +67,11 @@ function LandingPage() {
         >
           Start Coding – It’s Free
         </Link>
-
-        <div className="mt-16">
-          <img
-            src="/preview.png"
-            alt="CodeForge Editor Preview"
-            className="rounded-xl shadow-2xl border border-gray-200"
-          />
-        </div>
       </section>
 
-      {/* FEATURES */}
+      {/* FEATURES SECTION */}
       <section id="features" className="px-6 md:px-12 py-20 bg-white">
-        <h3 className="text-center text-4xl font-bold mb-12 text-gray-900">
-          Why CodeForge?
-        </h3>
+        <h3 className="text-center text-4xl font-bold mb-12 text-gray-900">Why CodeForge?</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
           <FeatureCard
@@ -126,7 +112,7 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* HOW IT WORKS SECTION */}
       <section id="how" className="px-6 md:px-12 py-20 max-w-5xl mx-auto">
         <h3 className="text-center text-4xl font-bold mb-10 text-gray-900">
           How It Works
@@ -151,52 +137,15 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* PRICING */}
-      <section id="pricing" className="px-6 md:px-12 py-20 bg-gray-100">
-        <h3 className="text-center text-4xl font-bold mb-12 text-gray-900">
-          Simple Pricing
-        </h3>
-
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
-
-          {/* Free Plan */}
-          <div className="bg-white p-8 rounded-xl border border-gray-300 shadow-sm">
-            <h4 className="text-2xl font-bold mb-4 text-gray-900">Free Plan</h4>
-            <ul className="space-y-3 text-gray-700">
-              <li>✔ Unlimited coding</li>
-              <li>✔ Save projects</li>
-              <li>✔ HTML live preview</li>
-              <li>✔ JS execution</li>
-              <li>✔ Limited cloud time</li>
-            </ul>
-            <p className="text-3xl font-bold mt-6 text-gray-900">₹0</p>
-          </div>
-
-          {/* Pro Plan */}
-          <div className="bg-gray-900 text-white p-8 rounded-xl shadow-lg">
-            <h4 className="text-2xl font-bold mb-4">Pro Plan</h4>
-            <ul className="space-y-3">
-              <li>✔ Unlimited cloud runtime</li>
-              <li>✔ Faster execution</li>
-              <li>✔ More languages</li>
-              <li>✔ Larger project size</li>
-              <li>✔ Priority support</li>
-            </ul>
-            <p className="text-3xl font-bold mt-6">₹299/mo</p>
-          </div>
-
-        </div>
-      </section>
-
       {/* FOOTER */}
       <footer className="px-6 md:px-12 py-10 text-center text-gray-600 border-t border-gray-300 bg-white">
         <p>© {new Date().getFullYear()} CodeForge — Build. Run. Create.</p>
       </footer>
-
     </div>
   );
 }
 
+/* Feature Card Component */
 const FeatureCard = ({ icon, title, desc }) => (
   <div className="p-6 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
     <div className="mb-4">{icon}</div>
@@ -205,6 +154,7 @@ const FeatureCard = ({ icon, title, desc }) => (
   </div>
 );
 
+/* Step Component */
 const Step = ({ num, title, children }) => (
   <div className="flex items-start space-x-6">
     <div className="text-4xl font-extrabold text-gray-400">{num}</div>
