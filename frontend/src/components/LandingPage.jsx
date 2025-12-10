@@ -18,7 +18,7 @@ function LandingPage() {
           <a href="#how" className="hover:text-gray-900 transition">How It Works</a>
 
           <Link
-            to="/login"
+            to="/auth"
             className="px-5 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition font-semibold"
           >
             Get Started
