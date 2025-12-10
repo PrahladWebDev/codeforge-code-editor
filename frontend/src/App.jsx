@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -93,9 +94,9 @@ function App() {
     return user.username.slice(0, 2).toUpperCase();
   };
 
-  // ---------------------------
-  // DASHBOARD LAYOUT COMPONENT
-  // ---------------------------
+  // ----------------------------------------------------
+  // DASHBOARD LAYOUT
+  // ----------------------------------------------------
   const DashboardLayout = () => (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* HEADER */}
@@ -116,10 +117,13 @@ function App() {
                   />
                 </svg>
               </button>
-              <h1 className="text-2xl font-bold text-white">CodeForge</h1>
+
+<Link to="/" className="text-2xl font-bold text-white hover:text-gray-300">
+  CodeForge
+</Link>
             </div>
 
-            {/* Profile Dropdown */}
+            {/* PROFILE DROPDOWN */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -178,6 +182,7 @@ function App() {
 
       {/* BODY */}
       <div className="flex-1 flex relative bg-gray-100">
+
         {/* MOBILE OVERLAY */}
         {isSidebarOpen && (
           <div
@@ -192,15 +197,8 @@ function App() {
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } lg:translate-x-0 lg:static lg:z-auto`}
         >
-          <div className="flex items-center justify-between px-6 py-4 border-b">
-            <h2 className="text-lg font-semibold text-gray-800">Your Projects</h2>
 
-            <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden">
-              <svg className="h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+          {/* ❌ REMOVED EMPTY HEADER BAR COMPLETELY */}
 
           <div className="flex-1 overflow-y-auto p-4">
             {loading ? (
@@ -247,16 +245,14 @@ function App() {
     </div>
   );
 
-  // ---------------------------
-  // LOGIN PAGE COMPONENT
-  // ---------------------------
+  // ----------------------------------------------------
+  // LOGIN PAGE
+  // ----------------------------------------------------
   const LoginPage = () => (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <h2 className="text-center text-4xl font-bold text-gray-900 mb-2">CodeForge</h2>
-        <p className="text-center text-sm text-gray-600 mb-8">
-          {showRegister ? "Create a new account" : "Sign in to your account"}
-        </p>
+
+        {/* ❌ Removed all headings */}
 
         <div className="bg-white py-8 px-6 shadow-xl rounded-lg">
           {showRegister ? <Register onSuccess={handleLogin} /> : <Login onSuccess={handleLogin} />}
@@ -274,19 +270,14 @@ function App() {
     </div>
   );
 
-  // ---------------------------
-  // MAIN ROUTER
-  // ---------------------------
+  // ----------------------------------------------------
+  // ROUTER
+  // ----------------------------------------------------
   return (
     <Router>
       <Routes>
-        {/* Landing page always visible */}
         <Route path="/" element={<LandingPage />} />
-
-        {/* login page */}
-        <Route path="/login" element={!isLoggedIn ? <LoginPage /> : <Navigate to="/app" />} />
-
-        {/* dashboard only if logged in */}
+        <Route path="/auth" element={!isLoggedIn ? <LoginPage /> : <Navigate to="/app" />} />
         <Route path="/app" element={isLoggedIn ? <DashboardLayout /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
