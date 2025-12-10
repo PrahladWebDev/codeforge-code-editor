@@ -17,7 +17,7 @@ import {
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
 
-// Modes
+// Common modes
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-html";
@@ -59,8 +59,8 @@ function Editor({ project, onRefresh }) {
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
 
-  const [running, setRunning] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [running, setRunning] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
 
   const [fontSize, setFontSize] = useState(16);
@@ -68,9 +68,9 @@ function Editor({ project, onRefresh }) {
 
   const iframeRef = useRef(null);
 
-  // -----------------------------
-  // FIX • DO NOT OVERWRITE CODE
-  // -----------------------------
+  // --------------------------------------------
+  // FIX: Only update code when switching project
+  // --------------------------------------------
   useEffect(() => {
     setCode(project.code ?? "");
     loadMode(project.language);
@@ -79,17 +79,24 @@ function Editor({ project, onRefresh }) {
     setIsSaved(true);
   }, [project._id]);
 
-  // -----------------------------
-  // MANUAL SAVE ONLY
-  // -----------------------------
+  // --------------------------------------------
+  // MANUAL SAVE ONLY — NO AUTO SAVE
+  // --------------------------------------------
   const handleSave = async () => {
     if (saving) return;
 
     setSaving(true);
+
     try {
       await axiosInstance.put(`/projects/${project._id}`, { code });
+
+      // Immediately reflect saved code in UI
+      project.code = code;
       setIsSaved(true);
-      onRefresh();
+
+      // Refresh backend data after small delay
+      setTimeout(() => onRefresh(), 300);
+
     } catch (err) {
       alert("Save failed");
     } finally {
@@ -97,9 +104,9 @@ function Editor({ project, onRefresh }) {
     }
   };
 
-  // -----------------------------
+  // --------------------------------------------
   // Run Code
-  // -----------------------------
+  // --------------------------------------------
   const handleRun = async () => {
     setRunning(true);
     setError("");
@@ -108,7 +115,7 @@ function Editor({ project, onRefresh }) {
     try {
       if (project.language === "javascript") {
         const logs = [];
-        const originalLog = console.log;
+        const orig = console.log;
 
         console.log = (...args) => logs.push(args.join(" "));
 
@@ -119,11 +126,15 @@ function Editor({ project, onRefresh }) {
           setError(String(err));
         }
 
-        console.log = originalLog;
-      } else if (project.language === "html") {
+        console.log = orig;
+      }
+
+      else if (project.language === "html") {
         iframeRef.current.srcdoc = code;
         setOutput("Preview updated");
-      } else {
+      }
+
+      else {
         const res = await axiosInstance.post("/execute", {
           code,
           language: project.language,
@@ -132,6 +143,7 @@ function Editor({ project, onRefresh }) {
         setOutput(res.data.output || "");
         if (res.data.error) setError(res.data.error);
       }
+
     } catch (err) {
       setError("Execution error");
     } finally {
@@ -139,9 +151,9 @@ function Editor({ project, onRefresh }) {
     }
   };
 
-  // -----------------------------
+  // --------------------------------------------
   // Tools
-  // -----------------------------
+  // --------------------------------------------
   const handleFormat = () => {
     try {
       if (project.language === "javascript") {
@@ -154,19 +166,23 @@ function Editor({ project, onRefresh }) {
         setCode(code.replace(/></g, ">\n<"));
       }
     } catch {
-      alert("Cannot format code");
+      alert("Formatting error");
     }
   };
 
   const handleClear = () => {
-    if (!window.confirm("Clear editor?")) return;
-    setCode("");
+    if (window.confirm("Clear editor?")) {
+      setCode("");
+      setIsSaved(false);
+    }
   };
 
   const handleDownload = () => {
     const blob = new Blob([code], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
     const link = document.createElement("a");
-    link.href = window.URL.createObjectURL(blob);
+    link.href = url;
     link.download = `${project.name}.${project.language}`;
     link.click();
   };
@@ -183,6 +199,7 @@ function Editor({ project, onRefresh }) {
 
       {/* Header */}
       <div className="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
+
         <div>
           <h2 className="text-xl font-bold">{project.name}</h2>
           <p className="text-sm text-gray-400">{project.language.toUpperCase()}</p>
@@ -239,7 +256,7 @@ function Editor({ project, onRefresh }) {
       {/* Editor + Output */}
       <div className="flex-1 flex flex-col lg:flex-row">
 
-        {/* Code Editor */}
+        {/* Editor */}
         <div className="flex-1">
           <AceEditor
             mode={aceMode}
@@ -254,7 +271,6 @@ function Editor({ project, onRefresh }) {
             fontSize={fontSize}
             wrapEnabled={wrap}
             showPrintMargin={false}
-            showGutter={true}
             highlightActiveLine={true}
             setOptions={{
               enableBasicAutocompletion: true,
