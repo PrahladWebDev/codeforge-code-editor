@@ -278,7 +278,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={!isLoggedIn ? <LoginPage /> : <Navigate to="/app" />} />
-        <Route path="/app" element={isLoggedIn ? <DashboardLayout /> : <Navigate to="/login" />} />
+        <Route path="/app" element={isLoggedIn ? <DashboardLayout /> : <Navigate to="/auth" />} />
       </Routes>
     </Router>
   );
