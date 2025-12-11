@@ -53,22 +53,23 @@ function ProjectList({ projects, onSelect, onRefresh }) {
   };
 
   const languages = [
-    { value: "javascript", label: "JavaScript", icon: <DiJavascript1 className="text-yellow-500 text-3xl" /> },
-    { value: "python", label: "Python", icon: <DiPython className="text-blue-500 text-3xl" /> },
-    { value: "java", label: "Java", icon: <DiJava className="text-red-600 text-3xl" /> },
-    { value: "html", label: "HTML", icon: <DiHtml5 className="text-orange-600 text-3xl" /> },
-    { value: "css", label: "CSS", icon: <DiCss3 className="text-blue-600 text-3xl" /> },
-    { value: "cpp", label: "C++", icon: <DiCpp className="text-blue-400 text-3xl" /> },
-    { value: "go", label: "Go", icon: <DiGo className="text-cyan-500 text-3xl" /> },
-    { value: "ruby", label: "Ruby", icon: <DiRuby className="text-red-700 text-3xl" /> },
+    { value: "javascript", label: "JavaScript", icon: <DiJavascript1 className="text-yellow-500 text-2xl" /> },
+    { value: "python", label: "Python", icon: <DiPython className="text-blue-500 text-2xl" /> },
+    { value: "java", label: "Java", icon: <DiJava className="text-red-600 text-2xl" /> },
+    { value: "html", label: "HTML", icon: <DiHtml5 className="text-orange-600 text-2xl" /> },
+    { value: "css", label: "CSS", icon: <DiCss3 className="text-blue-600 text-2xl" /> },
+    { value: "cpp", label: "C++", icon: <DiCpp className="text-blue-400 text-2xl" /> },
+    { value: "go", label: "Go", icon: <DiGo className="text-cyan-500 text-2xl" /> },
+    { value: "ruby", label: "Ruby", icon: <DiRuby className="text-red-700 text-2xl" /> },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Create New Project Form */}
+    <div className="h-full max-h-screen overflow-y-auto pr-2 space-y-6">
+
+      {/* Create Project Section */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Create New Project</h3>
-        
+
         <div className="space-y-4">
           <input
             type="text"
@@ -100,21 +101,11 @@ function ProjectList({ projects, onSelect, onRefresh }) {
                 : 'bg-gray-400 cursor-not-allowed'
             }`}
           >
-            {creating ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                </svg>
-                Creating...
-              </span>
-            ) : (
-              '+ Create Project'
-            )}
+            {creating ? 'Creating...' : '+ Create Project'}
           </button>
         </div>
 
-        {/* Selected Language UI */}
+        {/* Selected Language */}
         <div className="mt-4 flex items-center space-x-3 text-sm text-gray-700">
           <span className="font-medium">Selected:</span>
           {languages.find((l) => l.value === language)?.icon}
@@ -135,8 +126,8 @@ function ProjectList({ projects, onSelect, onRefresh }) {
         ) : (
           <div className="space-y-2">
             {projects.map((project) => {
-              const lang = languages.find(l => l.value === project.language) || languages[0];
-              
+              const lang = languages.find((l) => l.value === project.language) || languages[0];
+
               return (
                 <div
                   key={project._id}
@@ -148,7 +139,7 @@ function ProjectList({ projects, onSelect, onRefresh }) {
                       className="flex-1 cursor-pointer"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow">
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-indigo-500 text-white">
                           {lang.icon}
                         </div>
                         <div>
