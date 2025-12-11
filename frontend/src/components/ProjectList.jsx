@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 import axiosInstance from "../utils/axios";
 
+// Icons
+import {
+  DiJavascript1,
+  DiPython,
+  DiJava,
+  DiHtml5,
+  DiCss3,
+  DiGo,
+  DiRuby,
+} from "react-icons/di";
+import { SiCplusplus as DiCpp } from "react-icons/si";
+import { FaTrashAlt } from "react-icons/fa";
+
 function ProjectList({ projects, onSelect, onRefresh }) {
   const [name, setName] = useState('');
   const [language, setLanguage] = useState('javascript');
@@ -40,14 +53,14 @@ function ProjectList({ projects, onSelect, onRefresh }) {
   };
 
   const languages = [
-    { value: 'javascript', label: 'JavaScript', icon: 'JS' },
-    { value: 'python', label: 'Python', icon: 'PY' },
-    { value: 'java', label: 'Java', icon: 'JV' },
-    { value: 'html', label: 'HTML', icon: 'HTML' },
-    { value: 'css', label: 'CSS', icon: 'CSS' },
-    { value: 'cpp', label: 'C++', icon: 'C++' },
-    { value: 'go', label: 'Go', icon: 'GO' },
-    { value: 'ruby', label: 'Ruby', icon: 'RB' },
+    { value: "javascript", label: "JavaScript", icon: <DiJavascript1 className="text-yellow-500 text-3xl" /> },
+    { value: "python", label: "Python", icon: <DiPython className="text-blue-500 text-3xl" /> },
+    { value: "java", label: "Java", icon: <DiJava className="text-red-600 text-3xl" /> },
+    { value: "html", label: "HTML", icon: <DiHtml5 className="text-orange-600 text-3xl" /> },
+    { value: "css", label: "CSS", icon: <DiCss3 className="text-blue-600 text-3xl" /> },
+    { value: "cpp", label: "C++", icon: <DiCpp className="text-blue-400 text-3xl" /> },
+    { value: "go", label: "Go", icon: <DiGo className="text-cyan-500 text-3xl" /> },
+    { value: "ruby", label: "Ruby", icon: <DiRuby className="text-red-700 text-3xl" /> },
   ];
 
   return (
@@ -71,9 +84,9 @@ function ProjectList({ projects, onSelect, onRefresh }) {
             onChange={(e) => setLanguage(e.target.value)}
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition cursor-pointer"
           >
-            {languages.map((lang) => (
-              <option key={lang.value} value={lang.value}>
-                {lang.icon} {lang.label}
+            {languages.map((l) => (
+              <option key={l.value} value={l.value}>
+                {l.label}
               </option>
             ))}
           </select>
@@ -99,6 +112,13 @@ function ProjectList({ projects, onSelect, onRefresh }) {
               '+ Create Project'
             )}
           </button>
+        </div>
+
+        {/* Selected Language UI */}
+        <div className="mt-4 flex items-center space-x-3 text-sm text-gray-700">
+          <span className="font-medium">Selected:</span>
+          {languages.find((l) => l.value === language)?.icon}
+          <span>{languages.find((l) => l.value === language)?.label}</span>
         </div>
       </div>
 
