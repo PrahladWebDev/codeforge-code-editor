@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axiosInstance from "../utils/axios";
 
-// Icons
 import {
   DiJavascript1,
   DiPython,
